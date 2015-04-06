@@ -19,7 +19,7 @@ SDK_BASE	?= /Volumes/esp-open-sdk/esp-open-sdk/esp_iot_sdk_v1.0.0
 
 #Esptool.py path and port
 ESPTOOL		?= esptool.py
-ESPPORT		?= /dev/tty.Repleo-CH341-00001014
+ESPPORT		?= /dev/tty.Repleo-CH341-00005014
 
 # name for the target project
 TARGET		= app
