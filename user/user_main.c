@@ -41,21 +41,8 @@ static void ICACHE_FLASH_ATTR loop(os_event_t *events) {
 }
 
 
-
- 
-//void uart0_send_str(uint8 *buf); //not necessary line
- 
-Send_str(void) // define timer function
-{
-  // uart0_send_str("\r\n Electrodragon \r\n");
-}
-
-
-
 static void ICACHE_FLASH_ATTR at_tcpclient_sent_cb(void *arg) {
-    #ifdef PLATFORM_DEBUG
-    uart0_sendStr("Send callback\r\n");
-    #endif
+
      // The data sent, disconnected from the TCP-server
     struct espconn *pespconn = (struct espconn *)arg;
     espconn_disconnect(pespconn);
@@ -66,9 +53,6 @@ static void ICACHE_FLASH_ATTR at_tcpclient_discon_cb(void *arg) {
      // Disable, frees up memory
     os_free(pespconn->proto.tcp);
     os_free(pespconn);
-    #ifdef PLATFORM_DEBUG
-    uart0_sendStr("Disconnect callback\r\n");
-    #endif
 }
 
 
@@ -82,7 +66,7 @@ static void ICACHE_FLASH_ATTR at_tcpclient_connect_cb(void *arg)
     espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
     char payload[128];
      // Prepare the data string will send the MAC address of ESP8266 in AP mode and add the line ESP8266
-    // os_sprintf(payload, MACSTR ",%s\r\n", MAC2STR(macaddr), "ESP8266");
+    os_sprintf(payload, MACSTR ",%s\r\n", "Fuxx", "ESP8266");
 
      // Send data
     espconn_sent(pespconn, payload, strlen(payload));
