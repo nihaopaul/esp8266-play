@@ -21,7 +21,7 @@
 #define user_procTaskPrio        0
 #define user_procTaskQueueLen    1
 #define TCPSERVERIP "10.0.10.82"
-#define TCPSERVERPORT "9999"
+#define TCPSERVERPORT 9999
 
 
 os_event_t    user_procTaskQueue[user_procTaskQueueLen];
@@ -47,73 +47,10 @@ static void ICACHE_FLASH_ATTR loop(os_event_t *events) {
  
 Send_str(void) // define timer function
 {
-  uart0_send_str("\r\n Electrodragon \r\n");
+  // uart0_send_str("\r\n Electrodragon \r\n");
 }
 
 
-
-static void ICACHE_FLASH_ATTR senddata() {
-
-
-
-  char info[150];
-  char tcpserverip[15];
-  struct espconn *pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
-  if (pCon == NULL)
-  {
-      #ifdef PLATFORM_DEBUG
-      uart0_sendStr("TCP connect failed\r\n");
-      #endif
-      return;
-  }
-  pCon->type = ESPCONN_TCP;
-  pCon->state = ESPCONN_NONE;
-   // Set address TCP-based server where the data will be send
-  os_sprintf(tcpserverip, "%s", TCPSERVERIP);
-
-   
-  
-  uint32_t ip = ipaddr_addr(tcpserverip);
-  pCon->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
-  pCon->proto.tcp->local_port = espconn_port();
-   // Set the port TCP-based server, which will send data
-  pCon->proto.tcp->remote_port = TCPSERVERPORT;
-  os_memcpy(pCon->proto.tcp->remote_ip, &ip, 4);
-   // Register the callback function to be called when the connection is established
-  espconn_regist_connectcb (pCon, at_tcpclient_connect_cb);
-   // You can register a callback function to be called when rekonekte, but we do not need it yet
-   // espconn_regist_reconcb (pCon, at_tcpclient_recon_cb);
-   // Display debugging information
-  #ifdef PLATFORM_DEBUG
-  os_sprintf(info,"Start espconn_connect to " IPSTR ":%d\r\n",
-         IP2STR(pCon->proto.tcp->remote_ip),
-         pCon->proto.tcp->remote_port);
-  uart0_sendStr(info);
-  #endif
-   // Connect to the TCP-server
-  espconn_connect(pCon);
-}
-
-
-static void ICACHE_FLASH_ATTR at_tcpclient_connect_cb(void *arg)
-{
-    struct espconn *pespconn = (struct espconn *)arg;
-    #ifdef PLATFORM_DEBUG
-    uart0_sendStr("TCP client connect\r\n");
-    #endif
-     // Callback function that is called after sending data
-    espconn_regist_sentcb(pespconn, at_tcpclient_sent_cb);
-     // Callback function that is called after disconnection
-    espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
-    char payload[128];
-     // Prepare the data string will send the MAC address of ESP8266 in AP mode and add the line ESP8266
-    os_sprintf(payload, MACSTR ",%s\r\n", MAC2STR(macaddr), "ESP8266");
-    #ifdef PLATFORM_DEBUG
-    uart0_sendStr(payload);
-    #endif
-     // Send data
-    espconn_sent(pespconn, payload, strlen(payload));
-}
 
 static void ICACHE_FLASH_ATTR at_tcpclient_sent_cb(void *arg) {
     #ifdef PLATFORM_DEBUG
@@ -135,6 +72,57 @@ static void ICACHE_FLASH_ATTR at_tcpclient_discon_cb(void *arg) {
 }
 
 
+static void ICACHE_FLASH_ATTR at_tcpclient_connect_cb(void *arg)
+{
+    struct espconn *pespconn = (struct espconn *)arg;
+
+     // Callback function that is called after sending data
+    espconn_regist_sentcb(pespconn, at_tcpclient_sent_cb);
+     // Callback function that is called after disconnection
+    espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
+    char payload[128];
+     // Prepare the data string will send the MAC address of ESP8266 in AP mode and add the line ESP8266
+    // os_sprintf(payload, MACSTR ",%s\r\n", MAC2STR(macaddr), "ESP8266");
+
+     // Send data
+    espconn_sent(pespconn, payload, strlen(payload));
+}
+
+
+
+static void ICACHE_FLASH_ATTR senddata() {
+
+
+  char tcpserverip[15];
+  struct espconn *pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
+  if (pCon == NULL)
+  {
+      #ifdef PLATFORM_DEBUG
+      uart0_sendStr("TCP connect failed\r\n");
+      #endif
+      return;
+  }
+  pCon->type = ESPCONN_TCP;
+  pCon->state = ESPCONN_NONE;
+   // Set address TCP-based server where the data will be send
+  os_sprintf(tcpserverip, "%s", TCPSERVERIP);
+
+
+  uint32_t ip = ipaddr_addr(tcpserverip);
+  pCon->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
+  pCon->proto.tcp->local_port = espconn_port();
+   // Set the port TCP-based server, which will send data
+  pCon->proto.tcp->remote_port = TCPSERVERPORT;
+  os_memcpy(pCon->proto.tcp->remote_ip, &ip, 4);
+   // Register the callback function to be called when the connection is established
+  espconn_regist_connectcb (pCon, at_tcpclient_connect_cb);
+   // You can register a callback function to be called when rekonekte, but we do not need it yet
+   // espconn_regist_reconcb (pCon, at_tcpclient_recon_cb);
+   // Display debugging information
+
+   // Connect to the TCP-server
+  espconn_connect(pCon);
+}
 
 
 
@@ -159,7 +147,7 @@ static void ICACHE_FLASH_ATTR user_procTask(os_event_t *events) {
 void ICACHE_FLASH_ATTR user_init() {
 
 
-  uart_init(BIT_RATE_115200,BIT_RATE_115200); // start the UART
+  // uart_init(BIT_RATE_115200,BIT_RATE_115200); // start the UART
    
 
 
