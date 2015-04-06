@@ -41,6 +41,8 @@ static void ICACHE_FLASH_ATTR loop(os_event_t *events) {
 }
 
 
+
+
 static void ICACHE_FLASH_ATTR at_tcpclient_sent_cb(void *arg) {
 
      // The data sent, disconnected from the TCP-server
@@ -66,11 +68,12 @@ static void ICACHE_FLASH_ATTR at_tcpclient_connect_cb(void *arg)
     espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
     char payload[128];
      // Prepare the data string will send the MAC address of ESP8266 in AP mode and add the line ESP8266
-    os_sprintf(payload,",%s\r\n", "ESP8266");
+    os_sprintf(payload,"%s\r\n", "ESP8266");
 
      // Send data
     espconn_sent(pespconn, payload, strlen(payload));
 }
+
 
 
 
@@ -119,12 +122,13 @@ void some_timerfunc(void *arg) {
     //Set GPIO2 to HIGH
     gpio_output_set(BIT2, 0, BIT2, 0);
 
-    senddata();
+    
   }
 }
 
 static void ICACHE_FLASH_ATTR user_procTask(os_event_t *events) {
   os_delay_us(10);
+  senddata();
 }
 
 //Init function 
