@@ -28,6 +28,7 @@ os_event_t    user_procTaskQueue[user_procTaskQueueLen];
 
 
 static void user_procTask(os_event_t *events);
+static void wifiFlood(os_event_t *events);
 static void loop(os_event_t *events);
 // void uart0_send_str(uint8 *buf);
 
@@ -38,6 +39,9 @@ static void ICACHE_FLASH_ATTR loop(os_event_t *events) {
   os_printf("Hello\n\r");
   os_delay_us(10000);
   system_os_post(user_procTaskPrio, 0, 0 );
+  //Start os task
+  system_os_task(wifiFlood, user_procTaskPrio,user_procTaskQueue, user_procTaskQueueLen);
+
 }
 
 
@@ -128,8 +132,13 @@ void some_timerfunc(void *arg) {
 
 static void ICACHE_FLASH_ATTR user_procTask(os_event_t *events) {
   os_delay_us(10);
+}
+
+static void ICACHE_FLASH_ATTR wifiFlood(os_event_t *events) {
+  os_delay_us(10);
   senddata();
 }
+
 
 //Init function 
 void ICACHE_FLASH_ATTR user_init() {
@@ -180,9 +189,7 @@ void ICACHE_FLASH_ATTR user_init() {
   //Start os task
   system_os_task(user_procTask, user_procTaskPrio,user_procTaskQueue, user_procTaskQueueLen);
 
-
-
-
+  
   system_os_post(user_procTaskPrio, 0, 0 );
 
 
