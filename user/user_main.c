@@ -66,7 +66,7 @@ static void ICACHE_FLASH_ATTR at_tcpclient_connect_cb(void *arg)
     espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
     char payload[128];
      // Prepare the data string will send the MAC address of ESP8266 in AP mode and add the line ESP8266
-    os_sprintf(payload, MACSTR ",%s\r\n", "Fuxx", "ESP8266");
+    os_sprintf(payload,",%s\r\n", "ESP8266");
 
      // Send data
     espconn_sent(pespconn, payload, strlen(payload));
